@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Count Clamming Log</title>
+    <style>
+        #result p {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    </style>
+    <script>
+        function parseFile(input) {
+            const file = input.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    const parsedResult = parseContent(content);
+                    displayResult(parsedResult);
+                };
+                
+                reader.readAsText(file);
+            }
+        }
+        
+        function parseContent(content) {
+            const lines = content.split('\n');
+            const itemCounts = {};
+            let totalItems = 0;
+
+            lines.forEach((line) => {
+                const item = line.trim(); // Remove leading/trailing whitespace
+                if (item !== '' && !line.includes('---') && !line.includes('-->') && !line.includes('<--')) {
+                    if (itemCounts[item]) {
+                        itemCounts[item]++;
+                    } else {
+                        itemCounts[item] = 1;
+                    }
+                    totalItems++;
+                }
+            });
+
+            displayTotalItems(totalItems); // Call function to display total items
+            return itemCounts;
+        }
+        
+        function displayResult(parsedResult) {
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = '';
+            
+            for (const item in parsedResult) {
+                const lineElement = document.createElement('p');
+                lineElement.textContent = `${item}: ${parsedResult[item]}`;
+                resultContainer.appendChild(lineElement);
+            }
+        }
+
+        function displayTotalItems(totalItems) {
+            const totalItemsElement = document.getElementById('total-items');
+            totalItemsElement.textContent = `Total Items Parsed: ${totalItems}`;
+        }
+    </script>
+</head>
+<body>
+    <h1>Count Clamming Log</h1>
+    <ul>
+        <li>The script counts item occurences.</li> 
+        <li>The script expects a txt file with one item per line.</li>
+        <li>Empty lines and lines which contain --- or --> or <-- are excluded from counting.</li>
+    <p>
+        <input type="file" accept=".txt" onchange="parseFile(this)">
+    </p>
+    <div id="result"></div>
+    <p id="total-items"></p>
+</body>
+</html>
